@@ -81,10 +81,13 @@ export default function Rates() {
           ))}
         </div>
 
-        <p className="mt-8 flex items-center justify-center gap-2 text-sm text-gray-500">
-          <Phone className="h-4 w-4 text-brand-yellow-dark" />
+        <p className="mt-8 text-center text-sm text-gray-500">
+          <Phone className="mr-1.5 inline-block h-4 w-4 -translate-y-px align-middle text-brand-yellow-dark" />
           Rates are estimates and may vary. Call{' '}
-          <a href="tel:7051234567" className="font-semibold text-brand-black hover:text-brand-yellow-dark">
+          <a
+            href="tel:7051234567"
+            className="whitespace-nowrap font-semibold text-brand-black hover:text-brand-yellow-dark"
+          >
             (705) 123-4567
           </a>{' '}
           for an exact quote.

@@ -7,8 +7,6 @@ import Services from './components/Services.jsx'
 import WhyChooseUs from './components/WhyChooseUs.jsx'
 import Rates from './components/Rates.jsx'
 import AreasServed from './components/AreasServed.jsx'
-import Corporate from './components/Corporate.jsx'
-import DriveWithUs from './components/DriveWithUs.jsx'
 import Testimonials from './components/Testimonials.jsx'
 import Footer from './components/Footer.jsx'
 
@@ -25,8 +23,6 @@ export default function App() {
         <WhyChooseUs />
         <Rates />
         <AreasServed />
-        <Corporate />
-        <DriveWithUs />
         <Testimonials />
       </main>
       <Footer />

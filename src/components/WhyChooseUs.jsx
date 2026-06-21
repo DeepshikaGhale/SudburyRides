@@ -28,26 +28,23 @@ const REASONS = [
   },
 ]
 
-const IMAGE =
-  'https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=1200&q=80'
+const IMAGE = '/sr-taxi.webp'
 
 export default function WhyChooseUs() {
   return (
     <section id="about" className="bg-gray-50 py-20">
       <div className="container-px grid items-center gap-12 lg:grid-cols-2">
-        {/* Image with stat badge */}
+        {/* Photo */}
         <div className="relative order-last lg:order-first">
-          <div className="overflow-hidden rounded-3xl shadow-card">
+          <div className="absolute -bottom-5 -left-5 hidden h-28 w-28 rounded-full bg-brand-yellow/30 blur-2xl sm:block" />
+          <div className="absolute -right-4 -top-4 hidden h-20 w-20 rounded-2xl border-2 border-brand-yellow/50 sm:block" />
+          <div className="relative overflow-hidden rounded-3xl shadow-card">
             <img
               src={IMAGE}
-              alt="Comfortable interior of a clean Sudbury Rides vehicle"
-              className="h-full w-full object-cover"
+              alt="A branded Sudbury Rides vehicle on a Greater Sudbury street"
+              className="aspect-[4/3] w-full object-cover"
               loading="lazy"
             />
-          </div>
-          <div className="absolute -bottom-6 -right-2 rounded-2xl bg-brand-yellow px-6 py-5 shadow-glow sm:right-6">
-            <p className="font-display text-3xl font-extrabold text-brand-black">10+ yrs</p>
-            <p className="text-sm font-semibold text-brand-black/80">serving Greater Sudbury</p>
           </div>
         </div>
 

@@ -1,8 +1,7 @@
 import { Phone, ArrowRight, Star, ShieldCheck, Clock } from 'lucide-react'
 
-// Yellow taxi / ride-service hero image (free Unsplash photo).
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1600&q=80'
+// Taxi hero image (in /public).
+const HERO_IMAGE = '/taxi.jpg'
 
 export default function Hero() {
   return (
@@ -11,8 +10,8 @@ export default function Hero() {
       <div className="absolute inset-0 -z-10">
         <img
           src={HERO_IMAGE}
-          alt="Professional ride-service vehicle on a Greater Sudbury street at dusk"
-          className="h-full w-full object-cover"
+          alt="A taxi on a city street"
+          className="h-full w-full object-cover object-center"
           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-black via-brand-black/85 to-brand-black/40" />
@@ -23,7 +22,7 @@ export default function Hero() {
 
       <div className="container-px flex min-h-[92vh] items-center pb-16 pt-32">
         <div className="max-w-2xl animate-fade-up">
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-yellow/40 bg-brand-yellow/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-yellow">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-brand-yellow">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-yellow opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-yellow" />
