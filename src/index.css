@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-brand-black font-sans antialiased;
+  }
+
+  /* Offset anchored sections so the sticky navbar doesn't cover headings */
+  section[id] {
+    scroll-margin-top: 90px;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-yellow text-brand-black shadow-glow hover:bg-brand-yellow-dark hover:-translate-y-0.5;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-white/80 bg-white/5 text-white backdrop-blur hover:bg-white hover:text-brand-black;
+  }
+
+  .btn-dark {
+    @apply btn bg-brand-black text-white hover:bg-brand-gray hover:-translate-y-0.5;
+  }
+
+  .container-px {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+
+  .section-label {
+    @apply mb-2 inline-block text-sm font-bold uppercase tracking-[0.2em] text-brand-yellow-dark;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-extrabold leading-tight text-brand-black sm:text-4xl;
+  }
+}
