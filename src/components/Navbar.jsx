@@ -10,7 +10,7 @@ const NAV_LINKS = [
   { label: 'Contact', href: '#contact' },
 ]
 
-const PHONE = '(705) 123-4567'
+const PHONE = '(705) 989-8808'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)

@@ -44,7 +44,7 @@ export default function Hero() {
               Book a Ride
               <ArrowRight className="h-5 w-5" />
             </a>
-            <a href="tel:7051234567" className="btn-outline text-base">
+            <a href="tel:7059898808" className="btn-outline text-base">
               <Phone className="h-5 w-5" />
               Call Now
             </a>

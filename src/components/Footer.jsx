@@ -59,7 +59,7 @@ export default function Footer() {
               <ArrowRight className="h-4 w-4" />
             </a>
             <a
-              href="tel:7051234567"
+              href="tel:7059898808"
               className="btn inline-flex border-2 border-brand-black text-brand-black hover:bg-brand-black hover:text-white"
             >
               <Phone className="h-4 w-4" />
@@ -127,9 +127,9 @@ export default function Footer() {
           </h3>
           <ul className="mt-4 space-y-3.5 text-sm">
             <li>
-              <a href="tel:7051234567" className="flex items-center gap-3 hover:text-brand-yellow">
+              <a href="tel:7059898808" className="flex items-center gap-3 hover:text-brand-yellow">
                 <Phone className="h-5 w-5 shrink-0 text-brand-yellow" />
-                (705) 123-4567
+                (705) 989-8808
               </a>
             </li>
             <li>

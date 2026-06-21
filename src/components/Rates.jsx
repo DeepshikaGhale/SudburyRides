@@ -85,10 +85,10 @@ export default function Rates() {
           <Phone className="mr-1.5 inline-block h-4 w-4 -translate-y-px align-middle text-brand-yellow-dark" />
           Rates are estimates and may vary. Call{' '}
           <a
-            href="tel:7051234567"
+            href="tel:7059898808"
             className="whitespace-nowrap font-semibold text-brand-black hover:text-brand-yellow-dark"
           >
-            (705) 123-4567
+            (705) 989-8808
           </a>{' '}
           for an exact quote.
         </p>

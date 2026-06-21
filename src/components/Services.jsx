@@ -1,4 +1,4 @@
-import { Car, Plane, CalendarClock, ArrowRight } from 'lucide-react'
+import { Car, Plane, CalendarClock, ArrowRight, Phone } from 'lucide-react'
 
 const SERVICES = [
   {
@@ -56,14 +56,14 @@ export default function Services() {
 
           {/* CTA card to fill the 6th grid cell on large screens */}
           <article className="flex flex-col justify-center rounded-2xl bg-brand-black p-7 text-white shadow-card lg:col-span-1">
-            <h3 className="font-display text-xl font-extrabold">Need something else?</h3>
+            <h3 className="font-display text-xl font-extrabold">Got something else in mind?</h3>
             <p className="mt-2 text-sm text-gray-300">
-              Have a special request? Call our dispatch team and we&apos;ll arrange the
-              right ride for you.
+              Just give us a shout — our local team will sort out the perfect ride, however
+              you need to roll.
             </p>
-            <a href="#book" className="btn-primary mt-5 self-start">
-              Book a Ride
-              <ArrowRight className="h-4 w-4" />
+            <a href="tel:7059898808" className="btn-primary mt-5 self-start">
+              <Phone className="h-4 w-4" />
+              Call Us
             </a>
           </article>
         </div>

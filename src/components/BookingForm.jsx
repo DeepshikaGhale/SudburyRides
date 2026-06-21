@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Route,
   Timer,
+  Send,
 } from 'lucide-react'
 import AddressAutocomplete from './AddressAutocomplete'
 import RouteMap from './RouteMap'
@@ -20,6 +21,29 @@ const PASSENGER_OPTIONS = [1, 2, 3, 4, 5, 6, '7+'].map((n) => ({
   value: n,
   label: `${n} ${n === 1 ? 'passenger' : 'passengers'}`,
 }))
+
+// Dispatch number bookings are texted to (digits only, for the sms: link).
+const DISPATCH_NUMBER = '7059898808'
+const DISPATCH_DISPLAY = '(705) 989-8808'
+
+function formatDate(iso) {
+  if (!iso) return ''
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+function formatTime(hhmm) {
+  if (!hhmm) return ''
+  const [h, m] = hhmm.split(':').map(Number)
+  const period = h >= 12 ? 'PM' : 'AM'
+  const h12 = h % 12 === 0 ? 12 : h % 12
+  return `${h12}:${String(m).padStart(2, '0')} ${period}`
+}
 
 const FIELD_BASE =
   'w-full rounded-lg border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-brand-black outline-none transition-all placeholder:text-gray-400 focus:border-brand-yellow focus:bg-white focus:ring-2 focus:ring-brand-yellow/30'
@@ -48,14 +72,45 @@ export default function BookingForm() {
   const [time, setTime] = useState('')
   const [passengers, setPassengers] = useState('')
   const [tried, setTried] = useState(false)
+  const [smsHref, setSmsHref] = useState('')
 
-  // Static / front-end only — no backend. Just show a confirmation state.
+  // No backend: build a pre-filled SMS to dispatch and open the customer's
+  // messaging app. They tap Send to deliver the booking.
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!date || !time || !passengers) {
       setTried(true)
       return
     }
+
+    const fd = new FormData(e.currentTarget)
+    const val = (k) => (fd.get(k) || '').toString().trim()
+
+    const lines = [
+      'New ride booking — Sudbury Rides',
+      `Name: ${val('fullName')}`,
+      `Phone: ${val('phone')}`,
+      `Pick-up: ${pickupText}`,
+      `Drop-off: ${dropoffText}`,
+      `Date: ${formatDate(date)}`,
+      `Time: ${formatTime(time)}`,
+      `Passengers: ${passengers}`,
+    ]
+    if (route) {
+      lines.push(
+        `Approx: ${route.distanceKm.toFixed(1)} km, ~${Math.max(1, Math.round(route.durationMin))} min`,
+      )
+    }
+    const notes = val('notes')
+    if (notes) lines.push(`Notes: ${notes}`)
+
+    // `?&body=` works on both iOS and Android sms: links.
+    const href = `sms:${DISPATCH_NUMBER}?&body=${encodeURIComponent(lines.join('\n'))}`
+    setSmsHref(href)
+
+    // Open the messaging app (works on mobile; no-op on most desktops).
+    window.location.href = href
+
     setSubmitted(true)
     e.target.reset()
     setPickupText('')
@@ -67,7 +122,7 @@ export default function BookingForm() {
     setTime('')
     setPassengers('')
     setTried(false)
-    setTimeout(() => setSubmitted(false), 6000)
+    setTimeout(() => setSubmitted(false), 15000)
   }
 
   return (
@@ -98,11 +153,27 @@ export default function BookingForm() {
                   <CheckCircle2 className="h-9 w-9 text-brand-yellow-dark" />
                 </div>
                 <h3 className="mt-5 font-display text-2xl font-extrabold text-brand-black">
-                  Booking Received!
+                  Almost done — send your text!
                 </h3>
                 <p className="mt-2 max-w-xs text-gray-500">
-                  Thanks for choosing Sudbury Rides. Our dispatch team will call you
-                  shortly to confirm your pickup.
+                  We&apos;ve opened your messaging app with your booking ready to go. Just tap
+                  <span className="font-semibold text-brand-black"> Send</span> and our dispatch
+                  team will confirm your pickup.
+                </p>
+
+                <div className="mt-6 flex w-full max-w-xs flex-col gap-3">
+                  <a href={smsHref} className="btn-primary w-full">
+                    <Send className="h-5 w-5" />
+                    Text My Booking
+                  </a>
+                  <a href={`tel:${DISPATCH_NUMBER}`} className="btn-dark w-full">
+                    <Phone className="h-5 w-5" />
+                    Call Instead
+                  </a>
+                </div>
+
+                <p className="mt-4 text-xs text-gray-400">
+                  On a computer with no texting app? Call us at {DISPATCH_DISPLAY}.
                 </p>
               </div>
             ) : (
@@ -198,7 +269,8 @@ export default function BookingForm() {
                   Book Now
                 </button>
                 <p className="text-center text-xs text-gray-400">
-                  By booking you agree to be contacted about your ride.
+                  Tap Book Now and we&apos;ll open a pre-filled text to our dispatch team —
+                  just hit send.
                 </p>
               </form>
             )}
@@ -221,7 +293,7 @@ export default function BookingForm() {
                       <Route className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-gray-400">Distance</p>
+                      <p className="text-xs uppercase tracking-wide text-gray-400">Trip distance</p>
                       <p className="font-display text-xl font-extrabold text-white">
                         {route.distanceKm.toFixed(1)} km
                       </p>
@@ -242,7 +314,7 @@ export default function BookingForm() {
               ) : (
                 <p className="text-sm text-gray-300">
                   <span className="font-semibold text-white">Select a pick-up and drop-off</span>{' '}
-                  from the suggestions to see your route, distance and estimated drive time here.
+                  from the suggestions to see your route, distance and drive time here.
                 </p>
               )}
             </div>
@@ -251,11 +323,11 @@ export default function BookingForm() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-sm text-gray-300">Prefer to call? We&apos;re standing by.</p>
               <a
-                href="tel:7051234567"
+                href="tel:7059898808"
                 className="mt-1 flex items-center gap-2 font-display text-2xl font-extrabold text-brand-yellow"
               >
                 <Phone className="h-6 w-6" />
-                (705) 123-4567
+                (705) 989-8808
               </a>
             </div>
           </div>

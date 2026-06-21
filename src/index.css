@@ -46,3 +46,25 @@
     @apply font-display text-3xl font-extrabold leading-tight text-brand-black sm:text-4xl;
   }
 }
+
+/* Permanent labels on the route-map pins (pick-up / drop-off) */
+.sr-tip {
+  font-weight: 700;
+  font-size: 11px;
+  color: #111111;
+  border: none;
+  border-radius: 8px;
+  padding: 3px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+}
+.sr-tip::before {
+  display: none; /* hide the default tooltip arrow */
+}
+.sr-tip-pickup {
+  background: #FFC107;
+}
+.sr-tip-dropoff {
+  background: #ef4444;
+  color: #ffffff;
+}
