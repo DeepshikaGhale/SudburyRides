@@ -5,7 +5,6 @@ const QUICK_LINKS = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
   { label: 'Services', href: '#services' },
-  { label: 'Rates', href: '#rates' },
 ]
 
 const SOCIALS = [
