@@ -12,14 +12,21 @@ function featureToPlace(f) {
   if (lat == null || lon == null) return null
 
   const p = f.properties || {}
-  const primary =
-    [p.housenumber, p.street].filter(Boolean).join(' ') ||
-    p.name ||
-    p.street ||
-    'Unnamed location'
-  const secondary = [p.city || p.town || p.village || p.district, p.state, p.country]
-    .filter(Boolean)
-    .join(', ')
+  const street = [p.housenumber, p.street].filter(Boolean).join(' ')
+  const locality = p.city || p.town || p.village || p.district || p.county
+
+  // Named places (Cambrian College, Cineplex, etc.) show the name first, with
+  // the street address as context. Plain addresses fall back to the street.
+  let primary
+  let secondaryParts
+  if (p.name) {
+    primary = p.name
+    secondaryParts = [street, locality, p.state]
+  } else {
+    primary = street || locality || 'Unnamed location'
+    secondaryParts = street ? [locality, p.state] : [p.state, p.country]
+  }
+  const secondary = secondaryParts.filter(Boolean).join(', ')
 
   return {
     lat,
