@@ -54,13 +54,18 @@ export function buildEmail(b) {
 // Build a transporter from the current environment. Created per-call so it
 // picks up env vars in serverless cold starts.
 function createTransport() {
-  const { SMTP_HOST, SMTP_PORT = 587, SMTP_SECURE, SMTP_USER, SMTP_PASS } =
-    process.env
+  // Trim env values — pasting into dashboards often adds stray spaces/newlines,
+  // which break DNS (EBADNAME) or auth.
+  const env = (k) => (process.env[k] || '').trim()
+  const host = env('SMTP_HOST')
+  const port = Number(env('SMTP_PORT') || 587)
+  const user = env('SMTP_USER')
+  const pass = env('SMTP_PASS')
   return nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT),
-    secure: SMTP_SECURE === 'true' || Number(SMTP_PORT) === 465,
-    auth: SMTP_USER ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
+    host,
+    port,
+    secure: env('SMTP_SECURE') === 'true' || port === 465,
+    auth: user ? { user, pass } : undefined,
   })
 }
 
@@ -78,8 +83,8 @@ export async function sendBooking(b = {}) {
 
   try {
     await transporter.sendMail({
-      from: process.env.MAIL_FROM || process.env.SMTP_USER,
-      to: process.env.MAIL_TO,
+      from: (process.env.MAIL_FROM || process.env.SMTP_USER || '').trim(),
+      to: (process.env.MAIL_TO || '').trim(),
       subject: `New ride booking — ${b.fullName}`,
       text,
       html,
