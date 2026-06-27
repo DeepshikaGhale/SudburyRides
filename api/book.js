@@ -18,6 +18,9 @@ export default async function handler(req, res) {
     if (err.status !== 400) {
       console.error('[booking] failed:', err.cause?.message || err.message)
     }
-    res.status(err.status || 500).json({ error: err.message })
+    // TEMP DEBUG: expose the underlying SMTP error to diagnose the live 502.
+    res
+      .status(err.status || 500)
+      .json({ error: err.message, detail: err.cause?.message })
   }
 }
