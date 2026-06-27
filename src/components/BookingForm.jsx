@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Route,
   Timer,
-  Send,
+  Loader2,
 } from 'lucide-react'
 import AddressAutocomplete from './AddressAutocomplete'
 import RouteMap from './RouteMap'
@@ -22,7 +22,7 @@ const PASSENGER_OPTIONS = [1, 2, 3, 4, 5, 6, '7+'].map((n) => ({
   label: `${n} ${n === 1 ? 'passenger' : 'passengers'}`,
 }))
 
-// Dispatch number bookings are texted to (digits only, for the sms: link).
+// Dispatch phone shown as the call fallback.
 const DISPATCH_NUMBER = '7059898808'
 const DISPATCH_DISPLAY = '(705) 989-8808'
 
@@ -72,11 +72,11 @@ export default function BookingForm() {
   const [time, setTime] = useState('')
   const [passengers, setPassengers] = useState('')
   const [tried, setTried] = useState(false)
-  const [smsHref, setSmsHref] = useState('')
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
 
-  // No backend: build a pre-filled SMS to dispatch and open the customer's
-  // messaging app. They tap Send to deliver the booking.
-  const handleSubmit = (e) => {
+  // POST the booking to the SMTP backend, which emails it to dispatch.
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!date || !time || !passengers) {
       setTried(true)
@@ -84,45 +84,52 @@ export default function BookingForm() {
     }
 
     const fd = new FormData(e.currentTarget)
+    const form = e.currentTarget
     const val = (k) => (fd.get(k) || '').toString().trim()
 
-    const lines = [
-      'New ride booking — Sudbury Rides',
-      `Name: ${val('fullName')}`,
-      `Phone: ${val('phone')}`,
-      `Pick-up: ${pickupText}`,
-      `Drop-off: ${dropoffText}`,
-      `Date: ${formatDate(date)}`,
-      `Time: ${formatTime(time)}`,
-      `Passengers: ${passengers}`,
-    ]
-    if (route) {
-      lines.push(
-        `Approx: ${route.distanceKm.toFixed(1)} km, ~${Math.max(1, Math.round(route.durationMin))} min`,
-      )
+    const payload = {
+      fullName: val('fullName'),
+      phone: val('phone'),
+      pickup: pickupText,
+      dropoff: dropoffText,
+      date: formatDate(date),
+      time: formatTime(time),
+      passengers,
+      estimate: route
+        ? `${route.distanceKm.toFixed(1)} km, ~${Math.max(1, Math.round(route.durationMin))} min`
+        : '',
+      notes: val('notes'),
     }
-    const notes = val('notes')
-    if (notes) lines.push(`Notes: ${notes}`)
 
-    // `?&body=` works on both iOS and Android sms: links.
-    const href = `sms:${DISPATCH_NUMBER}?&body=${encodeURIComponent(lines.join('\n'))}`
-    setSmsHref(href)
+    setSending(true)
+    setError('')
+    try {
+      const res = await fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error('Request failed')
 
-    // Open the messaging app (works on mobile; no-op on most desktops).
-    window.location.href = href
-
-    setSubmitted(true)
-    e.target.reset()
-    setPickupText('')
-    setDropoffText('')
-    setPickup(null)
-    setDropoff(null)
-    setRoute(null)
-    setDate('')
-    setTime('')
-    setPassengers('')
-    setTried(false)
-    setTimeout(() => setSubmitted(false), 15000)
+      setSubmitted(true)
+      form.reset()
+      setPickupText('')
+      setDropoffText('')
+      setPickup(null)
+      setDropoff(null)
+      setRoute(null)
+      setDate('')
+      setTime('')
+      setPassengers('')
+      setTried(false)
+      setTimeout(() => setSubmitted(false), 15000)
+    } catch {
+      setError(
+        'Sorry — we couldn’t send your booking. Please try again or call us.',
+      )
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -153,27 +160,22 @@ export default function BookingForm() {
                   <CheckCircle2 className="h-9 w-9 text-brand-yellow-dark" />
                 </div>
                 <h3 className="mt-5 font-display text-2xl font-extrabold text-brand-black">
-                  Almost done — send your text!
+                  Booking sent!
                 </h3>
                 <p className="mt-2 max-w-xs text-gray-500">
-                  We&apos;ve opened your messaging app with your booking ready to go. Just tap
-                  <span className="font-semibold text-brand-black"> Send</span> and our dispatch
-                  team will confirm your pickup.
+                  We&apos;ve emailed your booking to our dispatch team. They&apos;ll call or text
+                  you shortly to confirm your pickup.
                 </p>
 
                 <div className="mt-6 flex w-full max-w-xs flex-col gap-3">
-                  <a href={smsHref} className="btn-primary w-full">
-                    <Send className="h-5 w-5" />
-                    Text My Booking
-                  </a>
                   <a href={`tel:${DISPATCH_NUMBER}`} className="btn-dark w-full">
                     <Phone className="h-5 w-5" />
-                    Call Instead
+                    Call Dispatch
                   </a>
                 </div>
 
                 <p className="mt-4 text-xs text-gray-400">
-                  On a computer with no texting app? Call us at {DISPATCH_DISPLAY}.
+                  Need it sooner? Call us at {DISPATCH_DISPLAY}.
                 </p>
               </div>
             ) : (
@@ -265,13 +267,27 @@ export default function BookingForm() {
                   />
                 </Field>
 
-                <button type="submit" className="btn-primary w-full text-base">
-                  Book Now
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="btn-primary w-full text-base disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {sending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Sending…
+                    </>
+                  ) : (
+                    'Book Now'
+                  )}
                 </button>
-                <p className="text-center text-xs text-gray-400">
-                  Tap Book Now and we&apos;ll open a pre-filled text to our dispatch team —
-                  just hit send.
-                </p>
+                {error ? (
+                  <p className="text-center text-xs font-semibold text-red-600">{error}</p>
+                ) : (
+                  <p className="text-center text-xs text-gray-400">
+                    Tap Book Now and we&apos;ll email your booking straight to our dispatch team.
+                  </p>
+                )}
               </form>
             )}
           </div>

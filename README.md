@@ -3,8 +3,8 @@
 A modern, responsive single-page React website for **Sudbury Rides** — a local ride/taxi
 company serving **Greater Sudbury, Ontario** only.
 
-Built with **React 18 + Vite + Tailwind CSS** and **Lucide React** icons. Fully
-front-end — the booking form is static (no backend).
+Built with **React 18 + Vite + Tailwind CSS** and **Lucide React** icons. A small
+**Express + Nodemailer** backend emails booking submissions to dispatch over SMTP.
 
 ## Tech stack
 
@@ -27,10 +27,38 @@ front-end — the booking form is static (no backend).
 
 ```bash
 npm install      # install dependencies
-npm run dev      # start dev server (http://localhost:5173)
+npm run dev      # start the Vite dev server only (http://localhost:5173)
+npm run server   # start the SMTP backend only (http://localhost:3001)
+npm run dev:all  # run BOTH (frontend + backend) together
 npm run build    # production build → dist/
 npm run preview  # preview the production build
 ```
+
+### Booking email (SMTP) setup
+
+The booking form POSTs to `/api/book`, which the Express server (`server/index.js`)
+turns into an email to your dispatch inbox via SMTP.
+
+1. Copy the env template and fill in your SMTP credentials:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   | Var | What it is |
+   | --- | --- |
+   | `SMTP_HOST` / `SMTP_PORT` | Your mail provider's SMTP server (e.g. `587`) |
+   | `SMTP_SECURE` | `true` only for port `465`; `587` uses STARTTLS |
+   | `SMTP_USER` / `SMTP_PASS` | SMTP login (often an app password) |
+   | `MAIL_FROM` | From address shown to dispatch |
+   | `MAIL_TO` | Dispatch inbox that receives bookings |
+
+2. Run `npm run dev:all`. In dev, Vite proxies `/api` → `http://localhost:3001`
+   (see `vite.config.js`), so the form and backend talk to each other automatically.
+
+> `.env` is gitignored — never commit real credentials. For production, run
+> `npm run server` (or deploy it behind your host) and serve `dist/` from the same
+> origin, or point the proxy/reverse-proxy `/api` at the backend.
 
 ## Project structure
 
@@ -38,9 +66,12 @@ npm run preview  # preview the production build
 .
 ├── index.html
 ├── package.json
-├── vite.config.js
+├── vite.config.js          # includes the dev /api → backend proxy
 ├── tailwind.config.js
 ├── postcss.config.js
+├── .env.example            # SMTP config template (copy to .env)
+├── server/
+│   └── index.js            # Express + Nodemailer: POST /api/book → email
 ├── public/
 │   ├── favicon.png         # pin mark cropped from the brand logo
 │   ├── logo-light.png      # logo with black wordmark (for light bg)
@@ -80,9 +111,10 @@ npm run preview  # preview the production build
 
 ## Notes
 
-- The booking form is **front-end only** — submitting shows a confirmation state and
-  does not send data anywhere. Wire up `handleSubmit` in `BookingForm.jsx` to your
-  dispatch/CRM endpoint when ready.
+- The booking form POSTs to the **Express SMTP backend** (`server/index.js`), which
+  emails the booking to `MAIL_TO`. On success the form shows a confirmation state; on
+  failure it shows an inline error and the call-dispatch fallback. Configure SMTP via
+  `.env` (see *Booking email (SMTP) setup* above).
 - The brand logo (`logo-light.png` / `logo-dark.png`) and `favicon.png` were derived
   from the supplied artwork — trimmed of transparent padding so they sit tightly in the
   navbar and footer. The `Logo` component picks the right variant via its `dark` prop.
