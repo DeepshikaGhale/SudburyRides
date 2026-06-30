@@ -60,7 +60,9 @@ function createTransport() {
   const host = env('SMTP_HOST')
   const port = Number(env('SMTP_PORT') || 587)
   const user = env('SMTP_USER')
-  const pass = env('SMTP_PASS')
+  // Gmail shows App Passwords in 4-char groups (e.g. "abcd efgh ijkl mnop").
+  // Strip ALL whitespace so a pasted-with-spaces password still authenticates.
+  const pass = env('SMTP_PASS').replace(/\s+/g, '')
   return nodemailer.createTransport({
     host,
     port,
