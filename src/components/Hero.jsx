@@ -1,4 +1,5 @@
 import { Phone, ArrowRight, Star, ShieldCheck, Clock } from 'lucide-react'
+import OfferBadge from './OfferBadge'
 
 // Taxi hero image (in /public).
 const HERO_IMAGE = '/taxi.jpg'
@@ -67,7 +68,13 @@ export default function Hero() {
               <span>Avg. pickup under 10 min</span>
             </div>
           </div>
+
+          {/* Offer, stacked below the trust strip until there's room beside it */}
+          <OfferBadge className="mt-10 xl:hidden" />
         </div>
+
+        {/* Offer, floating beside the headline on wide screens */}
+        <OfferBadge className="ml-auto hidden rotate-3 xl:block" />
       </div>
     </section>
   )

@@ -45,6 +45,15 @@
   .section-title {
     @apply font-display text-3xl font-extrabold leading-tight text-brand-black sm:text-4xl;
   }
+
+  /* Horizontal carousels keep their own arrow controls, so hide the native bar */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Permanent labels on the route-map pins (pick-up / drop-off) */
